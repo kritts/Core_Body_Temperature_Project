@@ -651,22 +651,35 @@ def overall_expt_plot_stdev(day_labels, times, veh_mice, treatment_mice, sample_
 ##    """Looks at all .csv data files and extracts the mouse ids from them"""
 ##    ###ADD THIS FUNCTION###
 ##
-##def extract_mouse_ids(filename):
-##    """Given a string that is a name of a data file, extracts the mouse ids from the first row of
-##    the document (by making sure they have the word "Data" in the cell). Returns a list of each
-##    unique mouse id as it appears in the file."""
-##    mouse_id_set = set()
-##    data = csv.DictReader(open(filename, 'rU'), quotechar='"', delimiter = ',')
-##    count = 0
-##    for row in data:
-##        count += 1
-##        if count > 1:
-##            break
-##        print "row:", row
-##        for key in row:
-##            if 'Data' in key:
-##                mouse_id_set.add(key)
-##    return sorted(mouse_id_set)    
+
+def get_all_mouse_ids_csv(filenames): ##Change this for raw csv!This is temporary!!!
+    """Looks at all .csv data files and extracts the mouse ids from them"""
+    mouse_ids = set()
+    for title in filenames:
+        #print type(title)
+        match = re.search(r'-\d+.+csv\Z', title)
+        # \d is any number 0-9
+        #+ means 1 or more of the preceding character
+        # . means any character other than new line
+        # \Z means at the end of the line
+        if match:
+            print
+            print title
+            print
+            data = csv.reader(open(title, 'rU'), quotechar='"', delimiter = ',')
+            count = 0
+            for line in data:
+                count+=1
+                if count == 1:
+                    for string in line:
+                        m = re.search('[0-9]{1} [a-zA-Z]+ Deg. C Data', string)
+                        found ="" 
+                        if m:
+                            found = m.group()
+                            print found
+                            mouse_ids.add(string)
+                else: pass
+    return mouse_ids
     
 #################
 #### MAIN
@@ -674,7 +687,7 @@ def overall_expt_plot_stdev(day_labels, times, veh_mice, treatment_mice, sample_
     
 def main():
     """This is the main python code that is run in this program."""
-    
+
     mouse_ids = ["2 Veh Deg. C Data","2 Acyline Deg. C Data","3 Veh Deg. C Data","3 Acyline Deg. C Data",
                  "4 Veh Deg. C Data","4 Acyline Deg. C Data","6 Veh Deg. C Data", "6 Acyline Deg. C Data",
                  "7 Veh Deg. C Data","7 Acyline Deg. C Data","8 Veh Deg. C Data","8 Acyline Deg. C Data",
